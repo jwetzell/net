@@ -303,3 +303,22 @@ func (c *UDPConn) SetWriteDeadline(t time.Time) error {
 	c.writeDeadline = t
 	return nil
 }
+
+func listenUDP(laddr *UDPAddr) (*UDPConn, error) {
+	fd, err := netdev.Socket(_AF_INET, _SOCK_DGRAM, _IPPROTO_UDP)
+
+	if err != nil {
+		return nil, err
+	}
+
+	laddrport := laddr.AddrPort()
+	err = netdev.Bind(fd, laddrport)
+	if err != nil {
+		return nil, err
+	}
+
+	return &UDPConn{
+		fd:    fd,
+		laddr: laddr,
+	}, nil
+}
